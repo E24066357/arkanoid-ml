@@ -22,6 +22,9 @@ def ml_loop():
     # === Here is the execution order of the loop === #
     # 1. Put the initialization code here.
     ball_served = False
+    finalx=0
+    nowbally=0
+    nowplat=0
 
     # 2. Inform the game process that ml process is ready before start the loop.
     comm.ml_ready()
@@ -30,6 +33,7 @@ def ml_loop():
     while True:
         # 3.1. Receive the scene information sent from the game process.
         scene_info = comm.get_scene_info()
+        
 
         # 3.2. If the game is over or passed, the game process will reset
         #      the scene and wait for ml process doing resetting job.
@@ -37,7 +41,7 @@ def ml_loop():
             scene_info.status == GameStatus.GAME_PASS:
             # Do some stuff if needed
             ball_served = False
-
+            
             # 3.2.1. Inform the game process that ml process is ready
             comm.ml_ready()
             continue
@@ -48,5 +52,36 @@ def ml_loop():
         if not ball_served:
             comm.send_instruction(scene_info.frame, PlatformAction.SERVE_TO_LEFT)
             ball_served = True
+            print("M")
         else:
-            comm.send_instruction(scene_info.frame, PlatformAction.MOVE_LEFT)
+           
+            if(scene_info.ball[0]==195 and scene_info.ball[1]>100):#最右邊195
+                finalx=scene_info.ball[0]
+                nowbally=scene_info.ball[1]
+                nowplat=scene_info.platform[0]
+                print(nowbally)
+                while(nowbally<405):
+                    finalx-=7
+                    nowbally+=7
+                    
+                if(nowplat<finalx):
+                    
+                    comm.send_instruction(scene_info.frame, PlatformAction.MOVE_RIGHT)
+                    
+            #撞左邊
+            if (scene_info.ball[0]==0 and scene_info.ball[1]>100):#最左邊
+                print("YOYO")
+                finalx=scene_info.ball[0]
+                nowbally=scene_info.ball[1]
+                nowplat=scene_info.platform[0]
+                print(nowbally)
+                while(nowbally<405):
+                    finalx+=7
+                    nowbally+=7
+                    print("k")
+                if(nowplat<finalx):
+                    comm.send_instruction(scene_info.frame, PlatformAction.MOVE_LEFT)
+                    
+                    
+
+                 
