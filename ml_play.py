@@ -23,12 +23,10 @@ def ml_loop():
     # 1. Put the initialization code here.
     ball_served = False
     finalx=100
-    nowbally=0
     lastframey=0
     velocity=0
-    x=0
-    y=0
     NEWX=0
+    lastframex=0
     # 2. Inform the game process that ml process is ready before start the loop.
     comm.ml_ready()
 
@@ -58,26 +56,13 @@ def ml_loop():
         else:
             
             if scene_info.ball[1]>100 and (lastframey-scene_info.ball[1]<0):#往下掉
-                if x==1:
-                    velocity=195-scene_info.ball[0]
-                    x=0
-                    finalx=195-velocity*(395-nowbally)/7
-                if scene_info.ball[0]==195 and x==0:
-                    nowbally=scene_info.ball[1]
-                    finalx=scene_info.ball[0]
-                    x=1    
-                if y==1:
-                    velocity=scene_info.ball[0]-0
-                    y=0
-                    finalx=0+velocity*(395-nowbally)/7                     
-                if scene_info.ball[0]==0 and y==0:
-                    nowbally=scene_info.ball[1]
-                    finalx=scene_info.ball[0]
-                    y=1      
+                
+                    velocity=scene_info.ball[0]-lastframex
+                    finalx=scene_info.ball[0]+velocity*(395-scene_info.ball[1])/7
+               
+               
             else:
-                x=0
                 velocity=0
-                y=0
                 finalx=100  
             #撞左邊 
             if lastframey-scene_info.ball[1]>0:
@@ -87,7 +72,7 @@ def ml_loop():
                     finalx = 390-finalx
                 elif finalx<0 :
                     finalx = -finalx      
-            NEWX= finalx-20   
+            NEWX= finalx-20
             if scene_info.platform[0]<NEWX:
                 comm.send_instruction(scene_info.frame, PlatformAction.MOVE_RIGHT)        
             if scene_info.platform[0]>NEWX:
@@ -96,6 +81,13 @@ def ml_loop():
                
            
             lastframey= scene_info.ball[1]
+            lastframex= scene_info.ball[0]
+                
+            
+                    
+
+                 
+
                 
             
                     
